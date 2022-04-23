@@ -1,8 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:trackyourdrunkfriend/nearby_friend_card.dart';
+import 'package:flutter/rendering.dart';
+import 'package:trackyourdrunkfriend/profile_page.dart';
+import 'package:trackyourdrunkfriend/side_menu.dart';
 import 'package:trackyourdrunkfriend/text_theme.dart';
 import 'color_scheme.dart';
+import 'home_page.dart';
 
 void main() {
   runApp(const TrackYourDrunkFriend());
@@ -20,43 +22,18 @@ class TrackYourDrunkFriend extends StatelessWidget {
         colorScheme: colorScheme,
         textTheme: textTheme,
       ),
-      home: const HomePage(),
+      home: PageNavigator(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+class PageNavigator extends StatelessWidget {
+  PageNavigator({Key? key}) : super(key: key);
+
+  final GlobalKey<NavigatorState> homeNavigatorKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    var nearbyFriendsData = {
-      {
-        "name": "Sanna",
-        "status": "Hello my buddys!",
-        "profilePicture": "",
-        "profileColor": Theme.of(context).colorScheme.tertiary,
-      },
-      {
-        "name": "Esko",
-        "status": "What's up?",
-        "profilePicture": "",
-        "profileColor": Theme.of(context).colorScheme.secondary,
-      },
-      {
-        "name": "Maria",
-        "status": "Una cerveza por favor :)",
-        "profilePicture": "",
-        "profileColor": Theme.of(context).colorScheme.primary,
-      },
-    };
-
-    var nearbyFriendCards = <NearbyFriendCard>[];
-
-    for (var data in nearbyFriendsData) {
-      nearbyFriendCards.add(NearbyFriendCard(data: data));
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -64,77 +41,46 @@ class HomePage extends StatelessWidget {
           "Track your drunk friend",
           style: Theme.of(context).textTheme.headline1,
         ),
-        leading: GestureDetector(
-          onTap: () {},
-          child: const Icon(Icons.menu),
-        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
-                onTap: () {},
-                child: const CircleAvatar(
-                  child: Icon(
-                    Icons.person,
-                  ),
-                  radius: 20,
-                )),
+              onTap: () {},
+              child: CircleAvatar(
+                child:
+                    const Image(image: AssetImage("assets/images/me_pfp.png")),
+                radius: 20,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
           )
         ],
       ),
-      body: ListView(
-        children: [
-          const Center(
-            child: Image(
-              image: AssetImage("assets/images/friends_nearby_placeholder.png"),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 10),
-            child: Center(
-              child: Text(
-                "Friends nearby",
-                style: Theme.of(context).textTheme.headline2,
-              ),
-            ),
-          ),
-          ...nearbyFriendCards,
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  "Track friend",
-                  style: Theme.of(context).textTheme.button,
-                ),
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(175, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  "Pin my location",
-                  style: Theme.of(context).textTheme.button,
-                ),
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(175, 50),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary,
-                        width: 2,
-                      )),
-                ),
-              )
-            ],
-          )
-        ],
+      drawer: const SideMenu(),
+      body: WillPopScope(
+        onWillPop: () async {
+          return !(await homeNavigatorKey.currentState!.maybePop());
+        },
+        child: Navigator(
+          key: homeNavigatorKey,
+          initialRoute: 'home',
+          onGenerateRoute: (RouteSettings settings) {
+            WidgetBuilder builder;
+            switch (settings.name) {
+              case 'home':
+                builder = (BuildContext context) => const HomePage();
+                break;
+              case 'profile':
+                builder = (BuildContext context) =>
+                    ProfilePage(data: settings.arguments as Map);
+                break;
+              default:
+                throw Exception('Invalid route: ${settings.name}');
+            }
+            return MaterialPageRoute<void>(
+                builder: builder, settings: settings);
+          },
+        ),
       ),
     );
   }

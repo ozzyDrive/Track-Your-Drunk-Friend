@@ -33,4 +33,16 @@ const TextTheme textTheme = TextTheme(
     fontWeight: FontWeight.w400,
     color: Colors.black,
   ),
+  headline4: TextStyle(
+    fontSize: 21,
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+  ),
+  headline5: TextStyle(
+    fontSize: 18,
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.bold,
+    decoration: TextDecoration.underline,
+  ),
 );
