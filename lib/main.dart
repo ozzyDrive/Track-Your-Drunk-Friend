@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:trackyourdrunkfriend/profile_page.dart';
 import 'package:trackyourdrunkfriend/side_menu.dart';
 import 'package:trackyourdrunkfriend/text_theme.dart';
